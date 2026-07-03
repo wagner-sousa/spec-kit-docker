@@ -15,26 +15,26 @@ hooks:
   - extension: agent-context
     command: speckit.agent-context.update
     enabled: true
-    optional: true
+    optional: false
     priority: 10
     prompt: Execute speckit.agent-context.update?
     description: Refresh agent context after specification
     condition: null
-  - extension: git
-    command: speckit.git.commit
-    enabled: true
-    optional: true
-    priority: 10
-    prompt: Commit specification changes?
-    description: Auto-commit after specification
-    condition: null
   - extension: refine
     command: speckit.refine.status
     enabled: true
-    optional: true
+    optional: false
     priority: 10
     prompt: Check artifact sync status after specification?
     description: Show sync status after spec generation
+    condition: null
+  - extension: git
+    command: speckit.git.commit
+    enabled: true
+    optional: false
+    priority: 10
+    prompt: Commit specification changes?
+    description: Auto-commit after specification
     condition: null
   after_plan:
   - extension: agent-context
@@ -146,7 +146,7 @@ hooks:
   - extension: git
     command: speckit.git.commit
     enabled: true
-    optional: true
+    optional: false
     priority: 10
     prompt: Commit constitution changes?
     description: Auto-commit after constitution update
