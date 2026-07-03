@@ -12,7 +12,7 @@ A Docker template for [GitHub Spec Kit](https://github.com/github/spec-kit) - Sp
 1. Build the image:
 
 ```bash
-docker compose build
+docker compose -f docker.compose.specify.yml build
 ```
 
 2. Run specify commands:
@@ -45,6 +45,7 @@ After initialization, use these slash commands in your AI coding agent:
 
 ### Docker Compose Configuration
 
+- **File**: `docker.compose.specify.yml`
 - **Container**: `specify`
 - **Working directory**: `/workspace`
 - **Volume mount**: Current directory mapped to `/workspace`
@@ -53,5 +54,5 @@ After initialization, use these slash commands in your AI coding agent:
 ### Stopping the Container
 
 ```bash
-docker compose down
+docker compose -f docker.compose.specify.yml down
 ```
