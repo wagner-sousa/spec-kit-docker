@@ -21,7 +21,7 @@ Este repositório é um template completo para projetos que utilizam Spec Kit co
 ### 1. Build da Imagem
 
 ```bash
-docker compose -f docker.compose.specify.yml build
+docker compose -f docker-compose.specify.yml build
 ```
 
 ### 2. Inicializar Projeto
@@ -381,7 +381,7 @@ spec-kit-docker/
 │   └── init-options.json        # Opções inicialização
 ├── .opencode/                   # Configuração OpenCode
 │   └── commands/                # 41 comandos speckit.*
-├── docker.compose.specify.yml   # Docker Compose
+├── docker-compose.specify.yml   # Docker Compose
 ├── Dockerfile                   # Imagem Docker
 ├── post-create.sh               # Script setup
 ├── specify                      # Script wrapper
