@@ -281,16 +281,21 @@ graph LR
     D --> E[Fase locked]
     E --> F[Core SDD bloqueado]
     E --> G[refine.* liberado]
-    E --> G
     E --> H[bugfix.* liberado]
-    F --> I{Precisa alterar?}
-    I -->|Mudança controlada| G
-    I -->|Bug| H
-    I -->|Mudança estrutural| J[lifecycle.unlock]
-    J --> B
+    E --> I[write-agents → AGENTS.md]
+    F --> J{Precisa alterar?}
+    J -->|Mudança controlada| G
+    J -->|Bug| H
+    J -->|Mudança estrutural| K[lifecycle.unlock]
+    K --> L[write-agents remove regras]
+    L --> B
+    M[switch.set] --> N[auto-unlock spec anterior]
+    N --> L
 ```
 
 Controla o ciclo de vida da especificação. Quando ativa (`locked`), bloqueia comandos de escrita direta (`specify`, `clarify`, `plan`, `tasks`, `checklist`, `analyze`) e permite apenas caminhos controlados (`refine.*`, `bugfix.*`).
+
+O estado fica **por spec** em `specs/NNN-feature/.lifecycle.json`. O comando `unlock --spec-dir <path>` é a interface genérica usada por outros plugins (ex: `switch.set` faz auto-unlock da spec anterior). Regras de bloqueio são sincronizadas com `AGENTS.md` via `lifecycle.write-agents` após cada lock/unlock.
 
 📖 [README da extensão](.specify/extensions/lifecycle/README.md)
 
@@ -303,12 +308,13 @@ graph LR
     C --> D{Limpo?}
     D -->|não| E[commit ou stash]
     E --> C
-    D -->|sim| F[git checkout 013-feature]
-    F --> G[feature.json atualizado automaticamente]
-    G --> H[Pronto para trabalhar]
+    D -->|sim| F[auto-unlock spec anterior]
+    F --> G[git checkout 013-feature]
+    G --> H[feature.json atualizado automaticamente]
+    H --> I[Pronto para trabalhar]
 ```
 
-Navega entre especificações sem conflitos de `feature.json`. O `switch.set` faz `git checkout` primeiro — a branch alvo já contém o `feature.json` correto.
+Navega entre especificações sem conflitos de `feature.json`. O `switch.set` faz `git checkout` primeiro — a branch alvo já contém o `feature.json` correto. Durante a troca, faz auto-unlock da spec anterior via `lifecycle.unlock --spec-dir`.
 
 📖 [README da extensão](.specify/extensions/switch/README.md)
 
@@ -361,11 +367,13 @@ Navega entre especificações sem conflitos de `feature.json`. O `switch.set` fa
 | | `speckit.refine.diff` | Mostra diferenças entre artefatos | Manual |
 | | `speckit.refine.status` | Verifica se specs estão sincronizadas | `after_specify`, `after_plan` |
 | **Doctor** | `speckit.doctor.check` | Diagnóstico completo do projeto | Manual |
-| **Lifecycle** | `speckit.lifecycle.lock` | Bloqueia comandos de escrita após spec finalizada | Manual |
-| | `speckit.lifecycle.unlock` | Reabilita todos os comandos | Manual |
+| **Lifecycle** | `speckit.lifecycle.check` | Guard hook — bloqueia comandos se spec locked | `before_specify`, `before_clarify`, `before_plan`, `before_tasks`, `before_checklist`, `before_analyze`, `before_sync_apply`, `before_sync_backfill` |
+| | `speckit.lifecycle.lock` | Bloqueia comandos de escrita da spec ativa | Manual |
+| | `speckit.lifecycle.unlock` | Reabilita todos os comandos (ou `--spec-dir <path>`) | Manual |
 | | `speckit.lifecycle.status` | Mostra fase atual e disponibilidade de comandos | Manual |
+| | `speckit.lifecycle.write-agents` | Sincroniza regras de bloqueio com AGENTS.md | `after_lifecycle_lock/unlock` |
 | **Switch** | `speckit.switch.list` | Lista todas as specs disponíveis | Manual |
-| | `speckit.switch.set NNN` | Troca para outra spec (git checkout + feature.json automático) | Manual |
+| | `speckit.switch.set NNN` | Troca para outra spec (git checkout + auto-unlock lifecycle) | Manual |
 
 ## 🧪 Testes
 
