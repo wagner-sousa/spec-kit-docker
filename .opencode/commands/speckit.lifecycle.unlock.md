@@ -1,26 +1,56 @@
 ---
-description: "Unlock the spec lifecycle — re-enable all commands"
+description: "Unlock the spec lifecycle — re-enable all commands (supports --spec-dir)"
 ---
 
 # Unlock Lifecycle
 
 Re-open the spec lifecycle. After unlocking, all commands return to normal operation.
-Use this when you need to make structural changes to spec artifacts after locking.
+Accepts `--spec-dir <path>` for cross-plugin usage (e.g. switch).
+
+## User Input
+
+```text
+$ARGUMENTS
+```
+
+## Argument Parsing
+
+1. Parse `$ARGUMENTS`:
+   - If **empty** → MODE=current (use `.specify/feature.json` to discover spec)
+   - If starts with `--spec-dir ` → extract path after flag → MODE=spec_dir
+   - Otherwise:
+     ```
+     Usage: /speckit.lifecycle.unlock [--spec-dir <path>]
+     ```
+     **Stop.**
+
+2. **MODE=current**:
+   - Read `.specify/feature.json` → extract `feature_directory`
+   - If missing: `⛔ No active feature.` **Stop.**
+   - `LOCK_PATH = "{feature_directory}/.lifecycle.json"`
+
+3. **MODE=spec_dir**:
+   - `LOCK_PATH = "{spec_dir}/.lifecycle.json"`
+   - Validate directory `{spec_dir}` exists. If not:
+     ```
+     ⛔ Spec directory not found: {spec_dir}
+     ```
+     **Stop.**
 
 ## Action
 
-1. **Verify current state**: Read `.specify/lifecycle.json`. If not found or `phase: active`, output:
+1. **Read `LOCK_PATH`**. If not found or `phase: active`:
    ```
    ℹ️ Lifecycle is already active. Nothing to unlock.
    ```
 
-2. **If locked**, confirm with user:
+2. **If locked**, confirm with user (skip confirmation if called programmatically via hook — only when directly invoked by user):
    ```
-   Unlock spec lifecycle? This will re-enable all commands.
+   Unlock spec [feature_name]? This will re-enable all commands.
    Proceed? (yes/no)
    ```
 
-3. **If confirmed**, update `.specify/lifecycle.json`:
+3. **If confirmed**, update `LOCK_PATH`:
    ```json
    {
      "phase": "active",
@@ -32,7 +62,7 @@ Use this when you need to make structural changes to spec artifacts after lockin
 
 4. **Output confirmation**:
    ```
-   🔓 Spec lifecycle unlocked.
+   🔓 Spec [feature_name] unlocked.
    All commands are now available.
    
    To lock again: /speckit.lifecycle.lock
@@ -42,6 +72,7 @@ Use this when you need to make structural changes to spec artifacts after lockin
 
 ## Rules
 
-- Requires explicit user confirmation
+- Requires explicit user confirmation (when invoked directly)
+- When called from other plugins programmatically, skip user confirmation
 - After unlock, consider running `/speckit.sync.analyze` to check for drift
-- Consider re-locking with `/speckit.lifecycle.lock` after changes are done
+- `--spec-dir` is the generic interface for cross-plugin lifecycle interaction

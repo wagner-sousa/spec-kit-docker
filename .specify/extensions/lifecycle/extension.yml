@@ -24,6 +24,25 @@ provides:
     - name: speckit.lifecycle.status
       file: commands/speckit.lifecycle.status.md
       description: "Show current lifecycle phase and lock metadata"
+    - name: speckit.lifecycle.write-agents
+      file: commands/speckit.lifecycle.write-agents.md
+      description: "Write lifecycle lock status into agent context file"
+
+  config:
+    - name: "lifecycle-config.yml"
+      template: "lifecycle-config.yml"
+      description: "Lifecycle configuration — blocked/allowed commands and auto-lock triggers"
+      required: false
+
+  hooks:
+    after_lifecycle_lock:
+      command: speckit.lifecycle.write-agents
+      optional: false
+      description: "Write lifecycle lock rules to agent context file"
+    after_lifecycle_unlock:
+      command: speckit.lifecycle.write-agents
+      optional: false
+      description: "Remove lifecycle lock rules from agent context file"
 
 tags:
   - "lifecycle"

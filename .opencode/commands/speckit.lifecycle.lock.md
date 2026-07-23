@@ -1,27 +1,35 @@
 ---
-description: "Lock the spec lifecycle — freeze spec/plan/tasks from further direct modification"
+description: "Lock the active spec lifecycle — freeze spec/plan/tasks from further direct modification"
 ---
 
 # Lock Lifecycle
 
 Finalize the feature's specification artifacts. After locking:
-- Core SDD commands (`/speckit.specify`, `/speckit.clarify`, `/speckit.plan`,
-  `/speckit.tasks`, `/speckit.checklist`, `/speckit.analyze`) will be **blocked**
-- `/speckit.sync.apply` and `/speckit.sync.backfill` will be **blocked**
-- Controlled paths remain open:
-  - `/speckit.refine.update` / `refine.propagate` / `refine.diff` / `refine.status`
-  - `/speckit.bugfix.report` / `bugfix.patch` / `bugfix.verify`
+- Commands in the lifecycle config's `blocked_commands` list will be **blocked**
+- Commands in the lifecycle config's `allowed_commands` list remain open
 
 ## Action
 
-1. **Confirm with user**: Ask explicitly before locking.
+1. **Read `.specify/feature.json`** → extract `feature_directory` (e.g. `specs/013-fix-auth`).
+   If `feature.json` does not exist:
    ```
-   Lock spec lifecycle? This will block destructive commands.
-   Only refine.* and bugfix.* will be available.
+   ⛔ No active feature found. Run /speckit.specify first.
+   ```
+   **Stop.**
+
+2. `LOCK_PATH = "{feature_directory}/.lifecycle.json"`
+
+3. **Read lifecycle config** at `.specify/extensions/lifecycle/lifecycle-config.yml` (create default if not found).
+
+4. **Confirm with user**: Ask explicitly before locking.
+   ```
+   Lock spec [feature_name]? This will block destructive commands.
+   Blocked: specify, clarify, plan, tasks, checklist, analyze, sync.apply, sync.backfill
+   Allowed: refine.*, bugfix.*
    Proceed? (yes/no)
    ```
 
-2. **If confirmed**, create/update `.specify/lifecycle.json`:
+5. **If confirmed**, create/update `LOCK_PATH`:
    ```json
    {
      "phase": "locked",
@@ -30,9 +38,9 @@ Finalize the feature's specification artifacts. After locking:
    }
    ```
 
-3. **Output confirmation**:
+6. **Output confirmation**:
    ```
-   🔒 Spec lifecycle locked.
+   🔒 Spec [feature_name] locked.
    
    Blocked:  specify, clarify, plan, tasks, checklist, analyze, sync.apply, sync.backfill
    Allowed:  refine.*, bugfix.*, converge, review.*, verify.*, sync.analyze, sync.propose, doctor, git.*
@@ -41,10 +49,11 @@ Finalize the feature's specification artifacts. After locking:
    To unlock: /speckit.lifecycle.unlock
    ```
 
-4. **Optional**: Run `/speckit.git.commit` to commit the lock state.
+7. **Optional**: Run `/speckit.git.commit` to commit the lock state.
 
 ## Rules
 
 - Requires explicit user confirmation — never lock silently
 - Write the lifecycle.json file with valid JSON
-- The lock applies at the project level, not per-feature
+- The lock applies per-feature, at `specs/NNN-feature/.lifecycle.json`
+- `lock` never accepts `--spec-dir` — only locks the active spec

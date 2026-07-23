@@ -5,16 +5,30 @@ description: "Check lifecycle phase — blocks execution when spec is locked"
 # Lifecycle Check
 
 Guard command. Runs as a mandatory before_* hook for core SDD commands.
-Reads `.specify/lifecycle.json` and either passes or blocks.
+Reads `.specify/feature.json` → discovers spec → reads `{spec_directory}/.lifecycle.json`.
 
 ## Prerequisites
 
-1. Check if `.specify/lifecycle.json` exists.
-2. If it does **not** exist → **PASS**. Output:
+1. **Read `.specify/feature.json`**:
+   - If not found → **PASS** (no active spec = no lock)
+     ```
+     ✅ Lifecycle: active (no active feature)
+     ```
+
+2. Extract `feature_directory` (e.g. `specs/013-fix-auth`).
+   If empty/missing → **PASS**:
    ```
-   ✅ Lifecycle: active (no lock file)
+   ✅ Lifecycle: active (no feature directory)
    ```
-3. If it exists → read JSON and extract `phase` field.
+
+3. `LOCK_PATH = "{feature_directory}/.lifecycle.json"`
+
+4. If `LOCK_PATH` does **not** exist → **PASS**:
+   ```
+   ✅ Lifecycle: active (no lock file for this spec)
+   ```
+
+5. Read JSON and extract `phase` field.
 
 ## Decision
 
@@ -25,8 +39,8 @@ Reads `.specify/lifecycle.json` and either passes or blocks.
 
 ### phase: "locked" → BLOCK
 ```
-⛔ SPEC IS LOCKED
-This spec was finalized on [locked_at].
+⛔ SPEC IS LOCKED — [spec_name]
+Locked since: [locked_at]
 Direct modification of spec/plan/tasks artifacts is blocked.
 
 Use one of these controlled paths:

@@ -304,6 +304,24 @@ hooks:
     prompt: Commit analysis results?
     description: Auto-commit after analysis
     condition: null
+  after_lifecycle_lock:
+  - extension: lifecycle
+    command: speckit.lifecycle.write-agents
+    enabled: true
+    optional: false
+    priority: 10
+    prompt: Updating agent context with lifecycle lock rules...
+    description: Write lifecycle lock to agent context file
+    condition: null
+  after_lifecycle_unlock:
+  - extension: lifecycle
+    command: speckit.lifecycle.write-agents
+    enabled: true
+    optional: false
+    priority: 10
+    prompt: Removing lifecycle lock rules from agent context...
+    description: Remove lifecycle lock from agent context file
+    condition: null
   after_converge:
   - extension: lifecycle
     command: speckit.lifecycle.status

@@ -4,33 +4,32 @@ description: "Show current lifecycle phase and lock metadata"
 
 # Lifecycle Status
 
-Display the current lifecycle phase, lock metadata, and which commands are affected.
+Display the current lifecycle phase per spec, lock metadata, and which commands are affected.
 
 ## Action
 
-1. **Read state**: Check if `.specify/lifecycle.json` exists.
+1. **Read spec info**: Check `.specify/feature.json`:
+   - If found → extract `feature_directory` and derive `spec_name` (e.g. `013-fix-auth` from `specs/013-fix-auth`)
+   - If not found → spec = "—"
 
-2. **If not found**:
+2. **Build lock path**: If `feature_directory` exists:
+   `LOCK_PATH = "{feature_directory}/.lifecycle.json"`
+   Read `LOCK_PATH`. If exists → parse JSON → extract `phase`, `locked_at`, `locked_by`
+   If not found → phase = "active (no lock file)"
+
+3. **Read lifecycle config**: `.specify/extensions/lifecycle/lifecycle-config.yml` → `blocked_commands` and `allowed_commands` lists. If config missing, use defaults.
+
+4. **Display**:
    ```
    # Lifecycle Status
    
-   **Phase**: active (default)
-   **Lock file**: not found
-   
-   All commands are available.
-   ```
-
-3. **If found**, parse and display:
-   ```
-   # Lifecycle Status
-   
+   **Spec**: [spec_name or "—"]
    **Phase**: [phase]
    **Locked at**: [locked_at or "—"]
    **Locked by**: [locked_by or "—"]
-   **Unlocked at**: [unlocked_at or "—"]
    ```
 
-4. **Show command matrix** based on phase:
+5. **Show command matrix** based on phase:
 
    If `active`:
    ```
@@ -63,4 +62,4 @@ Display the current lifecycle phase, lock metadata, and which commands are affec
 
 - Read-only — never modifies any file
 - Always output both phases for comparison
-- If JSON is malformed, report the parsing error and default to `active`
+- If JSON is malformed or missing `phase`, treat as `active` (fail-open)

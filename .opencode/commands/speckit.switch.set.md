@@ -54,13 +54,29 @@ From the spec directory name (e.g. `010-fix-login`):
 4. Check remote: `git branch -r --list "origin/010-*"`
 5. If only remote: suggest `git checkout --track origin/010-fix-login`
 
-### 4. Branch found? → git checkout
+### 4. Record current spec (for auto-unlock)
+
+Before checkout, read `.specify/feature.json` and extract `feature_directory`.
+If found, save as `PREV_SPEC_DIR` (e.g. `specs/013-fix-auth`).
+If not found, `PREV_SPEC_DIR = ""`.
+
+### 5. Branch found? → git checkout
 
 ```
 git checkout <branch>
 ```
 
 On success:
+
+**Auto-unlock previous spec** (if `PREV_SPEC_DIR` is not empty):
+- Read `{PREV_SPEC_DIR}/.lifecycle.json`
+- If `phase` is `locked`, write phase to `active`:
+  ```json
+  { "phase": "active", "locked_at": null, "locked_by": null, "unlocked_at": "[ISO_DATE]" }
+  ```
+- Output: `🔓 Previous spec [prev_spec_name] auto-unlocked.`
+
+Output:
 ```
 ✅ Switched to spec 010-fix-login
 📂 Directory: specs/010-fix-login
@@ -73,7 +89,7 @@ Use /speckit.bugfix.report to log bugs found in this spec
 On failure (e.g. checkout rejected by git):
 Report the git error and stop. Do not proceed.
 
-### 5. No branch? → --local-only fallback
+### 6. No branch? → --local-only fallback
 
 If `--local-only` flag is present (or no branch found and user agrees):
 
@@ -96,7 +112,7 @@ Options:
   - Create a new branch: git checkout -b 010-fix-login
 ```
 
-### 6. Confirm result
+### 7. Confirm result
 
 - Read `.specify/feature.json` to verify it points at the intended spec
 - Output confirmation
