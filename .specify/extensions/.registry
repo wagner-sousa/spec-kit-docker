@@ -8,9 +8,7 @@
       "enabled": true,
       "priority": 10,
       "registered_commands": {
-        "opencode": [
-          "speckit.agent-context.update"
-        ]
+        "opencode": ["speckit.agent-context.update"]
       },
       "registered_skills": [],
       "installed_at": "2026-07-03T14:57:36.942802+00:00"
@@ -60,9 +58,7 @@
       "enabled": true,
       "priority": 10,
       "registered_commands": {
-        "opencode": [
-          "speckit.verify.run"
-        ]
+        "opencode": ["speckit.verify.run"]
       },
       "registered_skills": [],
       "installed_at": "2026-07-03T16:37:45.550391+00:00"
@@ -74,10 +70,7 @@
       "enabled": true,
       "priority": 10,
       "registered_commands": {
-        "opencode": [
-          "speckit.verify-tasks.run",
-          "speckit.verify-tasks"
-        ]
+        "opencode": ["speckit.verify-tasks.run", "speckit.verify-tasks"]
       },
       "registered_skills": [],
       "installed_at": "2026-07-03T16:38:51.890333+00:00"
@@ -124,10 +117,7 @@
       "enabled": true,
       "priority": 10,
       "registered_commands": {
-        "opencode": [
-          "speckit.doctor.check",
-          "speckit.doctor"
-        ]
+        "opencode": ["speckit.doctor.check", "speckit.doctor"]
       },
       "registered_skills": [],
       "installed_at": "2026-07-03T16:47:26.556906+00:00"
@@ -148,6 +138,23 @@
       },
       "registered_skills": [],
       "installed_at": "2026-07-03T16:49:50.800368+00:00"
+    },
+    "lifecycle": {
+      "version": "1.0.0",
+      "source": "local",
+      "manifest_hash": "sha256:placeholder",
+      "enabled": true,
+      "priority": 100,
+      "registered_commands": {
+        "opencode": [
+          "speckit.lifecycle.check",
+          "speckit.lifecycle.lock",
+          "speckit.lifecycle.unlock",
+          "speckit.lifecycle.status"
+        ]
+      },
+      "registered_skills": [],
+      "installed_at": "2026-07-23T00:00:00.000000+00:00"
     }
   }
 }

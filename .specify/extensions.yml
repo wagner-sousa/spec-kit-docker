@@ -3,6 +3,7 @@ installed:
 - bugfix
 - doctor
 - git
+- lifecycle
 - refine
 - review
 - sync
@@ -71,6 +72,14 @@ hooks:
     description: Initialize Git repository before constitution setup
     condition: null
   before_specify:
+  - extension: lifecycle
+    command: speckit.lifecycle.check
+    enabled: true
+    optional: false
+    priority: 100
+    prompt: Checking lifecycle phase...
+    description: Block specify if spec is locked
+    condition: null
   - extension: git
     command: speckit.git.feature
     enabled: true
@@ -80,6 +89,14 @@ hooks:
     description: Create feature branch before specification
     condition: null
   before_clarify:
+  - extension: lifecycle
+    command: speckit.lifecycle.check
+    enabled: true
+    optional: false
+    priority: 100
+    prompt: Checking lifecycle phase...
+    description: Block clarify if spec is locked
+    condition: null
   - extension: git
     command: speckit.git.commit
     enabled: true
@@ -89,6 +106,14 @@ hooks:
     description: Auto-commit before spec clarification
     condition: null
   before_plan:
+  - extension: lifecycle
+    command: speckit.lifecycle.check
+    enabled: true
+    optional: false
+    priority: 100
+    prompt: Checking lifecycle phase...
+    description: Block plan if spec is locked
+    condition: null
   - extension: git
     command: speckit.git.commit
     enabled: true
@@ -98,6 +123,14 @@ hooks:
     description: Auto-commit before implementation planning
     condition: null
   before_tasks:
+  - extension: lifecycle
+    command: speckit.lifecycle.check
+    enabled: true
+    optional: false
+    priority: 100
+    prompt: Checking lifecycle phase...
+    description: Block tasks if spec is locked
+    condition: null
   - extension: git
     command: speckit.git.commit
     enabled: true
@@ -116,6 +149,14 @@ hooks:
     description: Auto-commit before implementation
     condition: null
   before_checklist:
+  - extension: lifecycle
+    command: speckit.lifecycle.check
+    enabled: true
+    optional: false
+    priority: 100
+    prompt: Checking lifecycle phase...
+    description: Block checklist if spec is locked
+    condition: null
   - extension: git
     command: speckit.git.commit
     enabled: true
@@ -125,6 +166,14 @@ hooks:
     description: Auto-commit before checklist generation
     condition: null
   before_analyze:
+  - extension: lifecycle
+    command: speckit.lifecycle.check
+    enabled: true
+    optional: false
+    priority: 100
+    prompt: Checking lifecycle phase...
+    description: Block analyze if spec is locked
+    condition: null
   - extension: git
     command: speckit.git.commit
     enabled: true
@@ -132,6 +181,24 @@ hooks:
     priority: 10
     prompt: Commit outstanding changes before analysis?
     description: Auto-commit before analysis
+    condition: null
+  before_sync_apply:
+  - extension: lifecycle
+    command: speckit.lifecycle.check
+    enabled: true
+    optional: false
+    priority: 100
+    prompt: Checking lifecycle phase...
+    description: Block sync.apply if spec is locked
+    condition: null
+  before_sync_backfill:
+  - extension: lifecycle
+    command: speckit.lifecycle.check
+    enabled: true
+    optional: false
+    priority: 100
+    prompt: Checking lifecycle phase...
+    description: Block sync.backfill if spec is locked
     condition: null
   before_taskstoissues:
   - extension: git
@@ -235,6 +302,15 @@ hooks:
     priority: 10
     prompt: Commit analysis results?
     description: Auto-commit after analysis
+    condition: null
+  after_converge:
+  - extension: lifecycle
+    command: speckit.lifecycle.status
+    enabled: true
+    optional: true
+    priority: 10
+    prompt: Show lifecycle status after convergence check?
+    description: Suggest locking when fully converged
     condition: null
   after_taskstoissues:
   - extension: git

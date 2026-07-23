@@ -25,7 +25,7 @@ Este repositório é um template Docker com [Spec Kit](https://github.com/github
 - **Docker** — ambiente isolado e reproduzível
 - **Spec Kit 0.12.5** — core do SDD
 - **OpenCode** — integração com AI coding agent
-- **8 extensões** — Git, Review, Verify, Sync, Bugfix, Refine, Doctor, Agent-Context
+- **9 extensões** — Git, Review, Verify, Sync, Bugfix, Refine, Doctor, Agent-Context, Lifecycle
 
 ## Pré-requisitos
 
@@ -107,19 +107,24 @@ graph TB
         H[Refine]
     end
 
+    subgraph "Governance"
+        J[Lifecycle]
+    end
+
     subgraph "Diagnostics"
         I[Doctor]
     end
 
-    A -->|Atualiza contexto| J[Coding Agent]
-    B -->|Gerencia branches| K[Git Repository]
-    C -->|Review código| L[Code Quality]
-    D -->|Valida implementação| M[Spec Alignment]
-    E -->|Detecta phantom tasks| N[Task Completion]
-    F -->|Detecta drift spec-código| O[Spec Drift]
-    G -->|Workflow de bugfix| P[Bugfix]
-    H -->|Refina especificações| Q[Specification]
-    I -->|Diagnóstico do projeto| R[Project Health]
+    A -->|Atualiza contexto| L[Coding Agent]
+    B -->|Gerencia branches| M[Git Repository]
+    C -->|Review código| N[Code Quality]
+    D -->|Valida implementação| O[Spec Alignment]
+    E -->|Detecta phantom tasks| P[Task Completion]
+    F -->|Detecta drift spec-código| Q[Spec Drift]
+    G -->|Workflow de bugfix| R[Bugfix]
+    H -->|Refina especificações| S[Specification]
+    J -->|Bloqueia/libera comandos| L
+    I -->|Diagnóstico do projeto| T[Project Health]
 ```
 
 ### Extensão Git — Branch Management & Auto-Commit
@@ -215,6 +220,28 @@ graph LR
     I -->|Não| K[Tudo sincronizado]
 ```
 
+### Extensão Lifecycle — Gerenciamento de Fases
+
+```mermaid
+graph LR
+    A[Fase active] --> B[Todos os comandos disponíveis]
+    B --> C{Spec finalizada?}
+    C -->|Não| B
+    C -->|Sim| D[lifecycle.lock]
+    D --> E[Fase locked]
+    E --> F[Core SDD bloqueado]
+    E --> G[refine.* liberado]
+    E --> G
+    E --> H[bugfix.* liberado]
+    F --> I{Precisa alterar?}
+    I -->|Mudança controlada| G
+    I -->|Bug| H
+    I -->|Mudança estrutural| J[lifecycle.unlock]
+    J --> B
+```
+
+Controla o ciclo de vida da especificação. Quando ativa (`locked`), bloqueia comandos de escrita direta (`specify`, `clarify`, `plan`, `tasks`, `checklist`, `analyze`) e permite apenas caminhos controlados (`refine.*`, `bugfix.*`).
+
 ## Comandos
 
 ### Comandos Core — Ciclo SDD
@@ -264,6 +291,9 @@ graph LR
 | | `speckit.refine.diff` | Mostra diferenças entre artefatos | Manual |
 | | `speckit.refine.status` | Verifica se specs estão sincronizadas | `after_specify`, `after_plan` |
 | **Doctor** | `speckit.doctor.check` | Diagnóstico completo do projeto | Manual |
+| **Lifecycle** | `speckit.lifecycle.lock` | Bloqueia comandos de escrita após spec finalizada | Manual |
+| | `speckit.lifecycle.unlock` | Reabilita todos os comandos | Manual |
+| | `speckit.lifecycle.status` | Mostra fase atual e disponibilidade de comandos | Manual |
 
 ## Como Usar como Template
 
