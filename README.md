@@ -25,7 +25,7 @@ Este repositório é um template Docker com [Spec Kit](https://github.com/github
 - **Docker** — ambiente isolado e reproduzível
 - **Spec Kit 0.12.5** — core do SDD
 - **OpenCode** — integração com AI coding agent
-- **9 extensões** — Git, Review, Verify, Sync, Bugfix, Refine, Doctor, Agent-Context, Lifecycle
+- **10 extensões** — Git, Review, Verify, Sync, Bugfix, Refine, Doctor, Agent-Context, Lifecycle, Switch
 
 ## Pré-requisitos
 
@@ -105,6 +105,7 @@ graph TB
         F[Sync]
         G[Bugfix]
         H[Refine]
+        K[Switch]
     end
 
     subgraph "Governance"
@@ -124,6 +125,7 @@ graph TB
     G -->|Workflow de bugfix| R[Bugfix]
     H -->|Refina especificações| S[Specification]
     J -->|Bloqueia/libera comandos| L
+    K -->|Navega entre specs| M
     I -->|Diagnóstico do projeto| T[Project Health]
 ```
 
@@ -242,6 +244,22 @@ graph LR
 
 Controla o ciclo de vida da especificação. Quando ativa (`locked`), bloqueia comandos de escrita direta (`specify`, `clarify`, `plan`, `tasks`, `checklist`, `analyze`) e permite apenas caminhos controlados (`refine.*`, `bugfix.*`).
 
+### Extensão Switch — Navegação entre Specs
+
+```mermaid
+graph LR
+    A[Spec 010] --> B{trocar para spec 013?}
+    B -->|sim| C[git status]
+    C --> D{Limpo?}
+    D -->|não| E[commit ou stash]
+    E --> C
+    D -->|sim| F[git checkout 013-feature]
+    F --> G[feature.json atualizado automaticamente]
+    G --> H[Pronto para trabalhar]
+```
+
+Navega entre especificações sem conflitos de `feature.json`. O `switch.set` faz `git checkout` primeiro — a branch alvo já contém o `feature.json` correto.
+
 ## Comandos
 
 ### Comandos Core — Ciclo SDD
@@ -294,6 +312,8 @@ Controla o ciclo de vida da especificação. Quando ativa (`locked`), bloqueia c
 | **Lifecycle** | `speckit.lifecycle.lock` | Bloqueia comandos de escrita após spec finalizada | Manual |
 | | `speckit.lifecycle.unlock` | Reabilita todos os comandos | Manual |
 | | `speckit.lifecycle.status` | Mostra fase atual e disponibilidade de comandos | Manual |
+| **Switch** | `speckit.switch.list` | Lista todas as specs disponíveis | Manual |
+| | `speckit.switch.set NNN` | Troca para outra spec (git checkout + feature.json automático) | Manual |
 
 ## Como Usar como Template
 

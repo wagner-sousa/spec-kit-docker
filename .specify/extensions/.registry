@@ -155,6 +155,21 @@
       },
       "registered_skills": [],
       "installed_at": "2026-07-23T00:00:00.000000+00:00"
+    },
+    "switch": {
+      "version": "1.0.0",
+      "source": "local",
+      "manifest_hash": "sha256:placeholder",
+      "enabled": true,
+      "priority": 10,
+      "registered_commands": {
+        "opencode": [
+          "speckit.switch.list",
+          "speckit.switch.set"
+        ]
+      },
+      "registered_skills": [],
+      "installed_at": "2026-07-23T00:00:00.000000+00:00"
     }
   }
 }
