@@ -1,58 +1,97 @@
 # Spec Kit Docker Template
 
-[![Spec Kit](https://img.shields.io/badge/Spec%20Kit-0.12.5-blue)](https://github.com/github/spec-kit)
-[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
-[![OpenCode](https://img.shields.io/badge/OpenCode-Integration-purple)](https://github.com/opencode-ai/opencode)
+[![Spec Kit](https://img.shields.io/badge/Spec%20Kit-0.12.5-blue?style=flat-square)](https://github.com/github/spec-kit)
+[![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
+[![OpenCode](https://img.shields.io/badge/OpenCode-Integration-purple?style=flat-square)](https://github.com/opencode-ai/opencode)
+[![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED?style=flat-square&logo=docker)](https://docker.com)
+[![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=flat-square&logo=python)](https://python.org)
+[![GitHub](https://img.shields.io/badge/GitHub-Template-181717?style=flat-square&logo=github)](https://github.com/wagner-sousa/spec-kit-docker)
 
 > Template Docker para [Spec Kit](https://github.com/github/spec-kit) — desenvolvimento orientado por especificações (SDD) com tudo configurado e pronto para usar.
 
-## Índice
-
-- [Sobre](#sobre)
-- [Pré-requisitos](#pré-requisitos)
-- [Início Rápido](#início-rápido)
-- [Fluxo de Trabalho](#fluxo-de-trabalho)
-- [Comandos](#comandos)
-- [Como Usar como Template](#como-usar-como-template)
-- [Licença](#licença)
-
-## Sobre
+## 🎯 Sobre
 
 Este repositório é um template Docker com [Spec Kit](https://github.com/github/spec-kit) e todas as extensões oficiais configuradas. Use como base para projetos que seguem Spec-Driven Development com AI Coding Agents (OpenCode, Copilot, etc.).
 
-### Tecnologias
+## 🛠 Tecnologias
 
 - **Docker** — ambiente isolado e reproduzível
 - **Spec Kit 0.12.5** — core do SDD
 - **OpenCode** — integração com AI coding agent
-- **10 extensões** — Git, Review, Verify, Sync, Bugfix, Refine, Doctor, Agent-Context, Lifecycle, Switch
+- **11 extensões** — Git, Review, Verify, Verify-Tasks, Sync, Bugfix, Refine, Doctor, Agent-Context, Lifecycle, Switch
 
-## Pré-requisitos
+## 📦 Pré-requisitos
 
 - Docker e Docker Compose instalados
 - Git
 - AI Coding Agent (opencode, copilot, etc.)
 
-## Início Rápido
+## 🚀 Instalação
+
+### Clone o Repositório
 
 ```bash
-# 1. Build da imagem
+git clone https://github.com/wagner-sousa/spec-kit-docker.git meu-projeto
+cd meu-projeto
+```
+
+### Personalize
+
+Renomeie o README e o arquivo `.specify/memory/constitution.md` para seu projeto.
+
+### Build da Imagem
+
+```bash
 docker compose -f docker-compose.specify.yml build
+```
 
-# 2. Inicializar projeto
+### Inicialize o Spec Kit
+
+```bash
 ./specify init . --integration opencode
+```
 
-# 3. Iniciar fluxo SDD
+### Inicie o Fluxo SDD
+
+```bash
 ./specify constitution
 ./specify specify "Descrição da feature"
 ```
 
-## Fluxo de Trabalho
+## 🔐 Variáveis de Ambiente
+
+| Variável | Descrição |
+|----------|-----------|
+| `SPECIFY_INIT_DIR` | Diretório do projeto contendo `.specify/` (útil para monorepos) |
+| `SPECIFY_FEATURE_DIRECTORY` | Sobrescreve a feature ativa (prioridade sobre `feature.json`) |
+| `SPECIFY_FEATURE` | Nome da feature para repositórios sem Git |
+
+## 📁 Estrutura do Projeto
+
+```
+spec-kit-docker/
+├── .specify/              # Core do Spec Kit
+│   ├── extensions/        # Extensões instaladas (11)
+│   ├── memory/            # Constitution e contexto
+│   └── scripts/           # Scripts de automação
+├── specs/                 # Especificações das features
+│   └── NNN-feature-name/
+│       ├── spec.md
+│       ├── plan.md
+│       └── tasks.md
+├── .opencode/             # Configuração do OpenCode
+│   └── commands/          # Comandos das extensões
+├── docker-compose.specify.yml
+├── specify                # Entrypoint CLI
+└── README.md
+```
+
+## 🏗️ Arquitetura e Fluxo de Trabalho
 
 ### Ciclo Principal SDD
 
 ```mermaid
-graph TD
+graph LR
     A[constitution] -->|Define princípios| B[specify]
     B -->|Define requisitos| C[plan]
     C -->|Plano técnico| D[tasks]
@@ -68,66 +107,63 @@ Cada comando core é envolvido por hooks que executam antes e depois automaticam
 
 ```mermaid
 graph LR
-    A[before_constitution] --> B[constitution]
-    B --> C[after_constitution]
-    C --> D[before_specify]
-    D --> E[specify]
-    E --> F[after_specify]
-    F --> G[before_plan]
-    G --> H[plan]
-    H --> I[after_plan]
-    I --> J[before_tasks]
-    J --> K[tasks]
-    K --> L[after_tasks]
-    L --> M[before_implement]
-    M --> N[implement]
-    N --> O[after_implement]
+    subgraph "Foundation"
+        A[before_constitution] --> B[constitution] --> C[after_constitution]
+    end
+    subgraph "Specification"
+        D[before_specify] --> E[specify] --> F[after_specify]
+    end
+    subgraph "Planning"
+        G[before_plan] --> H[plan] --> I[after_plan]
+    end
+    subgraph "Execution"
+        J[before_tasks] --> K[tasks] --> L[after_tasks]
+        M[before_implement] --> N[implement] --> O[after_implement]
+    end
+    C --> D
+    F --> G
+    I --> J
+    L --> M
 ```
 
 Os hooks `before_*` preparam o ambiente (git branches, contexto). Os hooks `after_*` executam verificações (review, verify, sync, commit, etc.).
 
 ### Extensões Instaladas
 
+**Grupo A — Core + Quality:**
+
 ```mermaid
-graph TB
+graph LR
     subgraph "Core"
-        A[Agent-Context]
-        B[Git]
+        A[Agent-Context] -->|Atualiza contexto| L[Coding Agent]
+        B[Git] -->|Gerencia branches| M[Git Repository]
     end
-
     subgraph "Quality"
-        C[Review]
-        D[Verify]
-        E[Verify-Tasks]
+        C[Review] -->|Review código| N[Code Quality]
+        D[Verify] -->|Valida implementação| O[Spec Alignment]
+        E[Verify-Tasks] -->|Detecta phantom tasks| P[Task Completion]
     end
-
-    subgraph "Workflow"
-        F[Sync]
-        G[Bugfix]
-        H[Refine]
-        K[Switch]
-    end
-
-    subgraph "Governance"
-        J[Lifecycle]
-    end
-
-    subgraph "Diagnostics"
-        I[Doctor]
-    end
-
-    A -->|Atualiza contexto| L[Coding Agent]
-    B -->|Gerencia branches| M[Git Repository]
-    C -->|Review código| N[Code Quality]
-    D -->|Valida implementação| O[Spec Alignment]
-    E -->|Detecta phantom tasks| P[Task Completion]
-    F -->|Detecta drift spec-código| Q[Spec Drift]
-    G -->|Workflow de bugfix| R[Bugfix]
-    H -->|Refina especificações| S[Specification]
-    J -->|Bloqueia/libera comandos| L
-    K -->|Navega entre specs| M
-    I -->|Diagnóstico do projeto| T[Project Health]
 ```
+
+**Grupo B — Workflow + Governance + Diagnostics:**
+
+```mermaid
+graph LR
+    subgraph "Workflow"
+        F[Sync] -->|Detecta drift| Q[Spec Drift]
+        G[Bugfix] -->|Workflow de correção| R[Bugfixes]
+        H[Refine] -->|Refina especificações| S[Specification]
+        K[Switch] -->|Navega entre specs| M
+    end
+    subgraph "Governance"
+        J[Lifecycle] -->|Bloqueia/libera comandos| L
+    end
+    subgraph "Diagnostics"
+        I[Doctor] -->|Diagnóstico do projeto| T[Project Health]
+    end
+```
+
+📖 [README Agent-Context](.specify/extensions/agent-context/README.md) · [README Doctor](.specify/extensions/doctor/README.md) · [README Verify-Tasks](.specify/extensions/verify-tasks/README.md)
 
 ### Extensão Git — Branch Management & Auto-Commit
 
@@ -146,12 +182,14 @@ graph LR
     N[after_implement] -->|git commit| F
 ```
 
+📖 [README da extensão](.specify/extensions/git/README.md)
+
 ### Extensão Review — Code Review Automático
 
 Disparado em `after_implement`:
 
 ```mermaid
-graph TD
+graph LR
     A[after_implement] --> B[review.run]
     B --> C[Revisa código, testes, tipos, erros]
     C --> D{Aprovado?}
@@ -160,12 +198,14 @@ graph TD
     F --> B
 ```
 
+📖 [README da extensão](.specify/extensions/review/README.md)
+
 ### Extensão Verify — Validação vs Specs
 
 Disparado em `after_implement`:
 
 ```mermaid
-graph TD
+graph LR
     A[after_implement] --> B[verify.run]
     B --> C[Valida implementação vs spec.md / plan.md / tasks.md]
     C --> D{Alinhado?}
@@ -175,12 +215,14 @@ graph TD
     G --> B
 ```
 
+📖 [README da extensão](.specify/extensions/verify/README.md)
+
 ### Extensão Sync — Detecção de Drift
 
 Disparado em `after_implement`:
 
 ```mermaid
-graph TD
+graph LR
     A[after_implement] --> B[sync.analyze]
     B --> C{Drift detectado?}
     C -->|Não| D[Tudo ok]
@@ -191,10 +233,12 @@ graph TD
     G --> I[Specs atualizados]
 ```
 
+📖 [README da extensão](.specify/extensions/sync/README.md)
+
 ### Extensão Bugfix — Workflow de Correção
 
 ```mermaid
-graph TD
+graph LR
     A[Identificar bug] --> B[bugfix.report]
     B --> C[Rastreia artefatos spec]
     C --> D[bugfix.patch]
@@ -206,6 +250,8 @@ graph TD
     H -->|Não| J[Corrigir artefatos]
     J --> D
 ```
+
+📖 [README da extensão](.specify/extensions/bugfix/README.md)
 
 ### Extensão Refine — Refinamento de Especificações
 
@@ -221,6 +267,8 @@ graph LR
     I -->|Sim| J[refine.diff]
     I -->|Não| K[Tudo sincronizado]
 ```
+
+📖 [README da extensão](.specify/extensions/refine/README.md)
 
 ### Extensão Lifecycle — Gerenciamento de Fases
 
@@ -244,6 +292,8 @@ graph LR
 
 Controla o ciclo de vida da especificação. Quando ativa (`locked`), bloqueia comandos de escrita direta (`specify`, `clarify`, `plan`, `tasks`, `checklist`, `analyze`) e permite apenas caminhos controlados (`refine.*`, `bugfix.*`).
 
+📖 [README da extensão](.specify/extensions/lifecycle/README.md)
+
 ### Extensão Switch — Navegação entre Specs
 
 ```mermaid
@@ -260,9 +310,11 @@ graph LR
 
 Navega entre especificações sem conflitos de `feature.json`. O `switch.set` faz `git checkout` primeiro — a branch alvo já contém o `feature.json` correto.
 
-## Comandos
+📖 [README da extensão](.specify/extensions/switch/README.md)
 
-### Comandos Core — Ciclo SDD
+### Comandos
+
+#### Comandos Core — Ciclo SDD
 
 | Comando | Descrição | Quando usar |
 |---------|-----------|-------------|
@@ -277,7 +329,7 @@ Navega entre especificações sem conflitos de `feature.json`. O `switch.set` fa
 | `./specify converge` | Converge artefatos spec desatualizados | Quando houver drift |
 | `./specify taskstoissues` | Converte tasks em issues do GitHub | Após tasks, para acompanhamento |
 
-### Comandos das Extensões
+#### Comandos das Extensões
 
 | Extensão | Comando | Descrição | Disparo automático |
 |----------|---------|-----------|--------------------|
@@ -315,23 +367,19 @@ Navega entre especificações sem conflitos de `feature.json`. O `switch.set` fa
 | **Switch** | `speckit.switch.list` | Lista todas as specs disponíveis | Manual |
 | | `speckit.switch.set NNN` | Troca para outra spec (git checkout + feature.json automático) | Manual |
 
-## Como Usar como Template
+## 🧪 Testes
 
-```bash
-# 1. Clone
-git clone https://github.com/wagner-sousa/spec-kit-docker.git meu-projeto
-cd meu-projeto
+- **`specify doctor`** — diagnóstico do projeto via CLI
+- **`speckit.doctor.check`** — diagnóstico completo (extensões, hooks, sincronia)
+- **`speckit.verify.run`** — valida implementação vs spec/plan/tasks
+- **`speckit.verify-tasks.run`** — detecta phantom tasks
 
-# 2. Renomeie (README, .specify/memory/constitution.md)
+_Nota: `doctor.check` e `verify.run` são disparados automaticamente em hooks `after_*`._
 
-# 3. Inicialize o Spec Kit
-./specify init . --integration opencode
-
-# 4. Comece o fluxo SDD
-./specify constitution
-./specify specify "Minha primeira feature"
-```
-
-## Licença
+## 📄 Licença
 
 MIT. Veja [LICENSE](LICENSE).
+
+## 📬 Contato
+
+**Wagner Sousa** — [GitHub](https://github.com/wagner-sousa)
