@@ -384,6 +384,39 @@ Navega entre especificações sem conflitos de `feature.json`. O `switch.set` fa
 
 _Nota: `doctor.check` e `verify.run` são disparados automaticamente em hooks `after_*`._
 
+## 🔄 Atualizando seu Projeto
+
+Este repositório é um template. Para receber atualizações de novas versões:
+
+1. Copie o workflow de atualização para o seu projeto:
+   ```bash
+   cp .github/workflow-templates/update-from-template.yml .github/workflows/update-from-template.yml
+   ```
+2. Se você fez fork, edite `TEMPLATE_REPO` no workflow para apontar para o seu fork
+3. O workflow roda automaticamente toda segunda-feira e verifica novas releases
+4. Se houver atualização, um PR é aberto automaticamente com as mudanças
+
+### O que é atualizado
+
+| Atualizado | Preservado |
+|------------|------------|
+| `Dockerfile` | `README.md` |
+| `docker-compose.specify.yml` | `specs/` |
+| `specify` (entrypoint) | `.specify/memory/constitution.md` |
+| `post-create.sh` | `.env*` |
+| `.specify/` (extensões, scripts, templates) | Demais arquivos do projeto |
+| `.opencode/` (comandos) | |
+
+### Atualização manual
+
+```bash
+git remote add template https://github.com/wagner-sousa/spec-kit-docker.git
+git fetch template tag vX.Y.Z
+git checkout FETCH_HEAD -- Dockerfile docker-compose.specify.yml specify post-create.sh .specify/ ':!.specify/memory/' .opencode/
+echo "vX.Y.Z" > .template-version
+git add . && git commit -m "chore: update template to vX.Y.Z"
+```
+
 ## 📄 Licença
 
 MIT. Veja [LICENSE](LICENSE).
