@@ -2,7 +2,6 @@
 
 [![Spec Kit](https://img.shields.io/badge/Spec%20Kit-0.13.3-blue?style=flat-square)](https://github.com/github/spec-kit)
 [![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
-[![OpenCode](https://img.shields.io/badge/OpenCode-Integration-purple?style=flat-square)](https://github.com/opencode-ai/opencode)
 [![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED?style=flat-square&logo=docker)](https://docker.com)
 [![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=flat-square&logo=python)](https://python.org)
 [![GitHub](https://img.shields.io/badge/GitHub-Template-181717?style=flat-square&logo=github)](https://github.com/wagner-sousa/spec-kit-docker)
@@ -11,20 +10,19 @@
 
 ## 🎯 Sobre
 
-Este repositório é um template Docker com [Spec Kit](https://github.com/github/spec-kit) e todas as extensões oficiais configuradas. Use como base para projetos que seguem Spec-Driven Development com AI Coding Agents (OpenCode, Copilot, etc.).
+Este repositório é um template Docker com [Spec Kit](https://github.com/github/spec-kit) e todas as extensões oficiais configuradas. Use como base para projetos que seguem Spec-Driven Development com qualquer AI Coding Agent.
 
 ## 🛠 Tecnologias
 
 - **Docker** — ambiente isolado e reproduzível
 - **Spec Kit 0.13.3** — core do SDD
-- **OpenCode** — integração com AI coding agent
 - **11 extensões** — Git, Review, Verify, Verify-Tasks, Sync, Bugfix, Refine, Doctor, Agent-Context, [Lifecycle](https://github.com/wagner-sousa/spec-kit-lifecycle), [Switch](https://github.com/wagner-sousa/spec-kit-switch)
 
 ## 📦 Pré-requisitos
 
 - Docker e Docker Compose instalados
 - Git
-- AI Coding Agent (opencode, copilot, etc.)
+- AI Coding Agent com suporte a Spec Kit (qualquer integração suportada)
 
 ## 🚀 Instalação
 
@@ -48,7 +46,7 @@ docker compose -f docker-compose.specify.yml build
 ### Inicialize o Spec Kit
 
 ```bash
-./specify init . --integration opencode
+./specify init . --integration <seu-agente>
 ```
 
 ### Inicie o Fluxo SDD
@@ -79,8 +77,6 @@ spec-kit-docker/
 │       ├── spec.md
 │       ├── plan.md
 │       └── tasks.md
-├── .opencode/             # Configuração do OpenCode
-│   └── commands/          # Comandos das extensões
 ├── docker-compose.specify.yml
 ├── specify                # Entrypoint CLI
 └── README.md
@@ -405,14 +401,13 @@ Este repositório é um template. Para receber atualizações de novas versões:
 | `specify` (entrypoint) | `.specify/memory/constitution.md` |
 | `post-create.sh` | `.env*` |
 | `.specify/` (extensões, scripts, templates) | Demais arquivos do projeto |
-| `.opencode/` (comandos) | |
 
 ### Atualização manual
 
 ```bash
 git remote add template https://github.com/wagner-sousa/spec-kit-docker.git
 git fetch template tag vX.Y.Z
-git checkout FETCH_HEAD -- Dockerfile docker-compose.specify.yml specify post-create.sh .specify/ ':!.specify/memory/' .opencode/
+git checkout FETCH_HEAD -- Dockerfile docker-compose.specify.yml specify post-create.sh .specify/ ':!.specify/memory/'
 echo "vX.Y.Z" > .template-version
 git add . && git commit -m "chore: update template to vX.Y.Z"
 ```

@@ -64,8 +64,7 @@ jobs:
             docker-compose.specify.yml \
             specify \
             post-create.sh \
-            .specify/ ':!.specify/memory/' \
-            .opencode/
+            .specify/ ':!.specify/memory/'
 
           echo "${{ steps.latest.outputs.version }}" > .template-version
 
@@ -98,7 +97,6 @@ jobs:
           Files updated by this template sync:
           - \`Dockerfile\`, \`docker-compose.specify.yml\`, \`specify\`, \`post-create.sh\`
           - \`.specify/\` (extensions, scripts, templates)
-          - \`.opencode/\` (commands)
 
           Your customizations in \`README.md\`, \`.specify/memory/constitution.md\`, and \`specs/\` are **not** affected." \
             --base main \
