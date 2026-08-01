@@ -18,7 +18,7 @@ RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 
 ENV PATH="/home/vscode/.local/bin:${PATH}"
 
-RUN uv tool install specify-cli --from git+https://github.com/github/spec-kit.git
+RUN uv tool install specify-cli --from git+https://github.com/github/spec-kit.git@v0.13.3
 
 WORKDIR /workspace
 

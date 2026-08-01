@@ -326,7 +326,7 @@ hooks:
   - extension: lifecycle
     command: speckit.lifecycle.status
     enabled: true
-    optional: true
+    optional: false
     priority: 10
     prompt: Show lifecycle status after convergence check?
     description: Suggest locking when fully converged

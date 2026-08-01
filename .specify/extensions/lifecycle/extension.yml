@@ -5,7 +5,10 @@ extension:
   name: "SDD Lifecycle Manager"
   version: "1.0.0"
   description: "Phase-gate lifecycle for Spec Kit — lock spec artifacts after finalization, block destructive commands, allow only refine/bugfix"
-  author: "local"
+  author: "Wagner Sousa"
+  repository: "https://github.com/wagner-sousa/spec-kit-lifecycle"
+  license: "MIT"
+  homepage: "https://github.com/wagner-sousa/spec-kit-lifecycle"
 
 requires:
   speckit_version: ">=0.4.0"

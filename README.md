@@ -1,6 +1,6 @@
 # Spec Kit Docker Template
 
-[![Spec Kit](https://img.shields.io/badge/Spec%20Kit-0.12.5-blue?style=flat-square)](https://github.com/github/spec-kit)
+[![Spec Kit](https://img.shields.io/badge/Spec%20Kit-0.13.3-blue?style=flat-square)](https://github.com/github/spec-kit)
 [![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
 [![OpenCode](https://img.shields.io/badge/OpenCode-Integration-purple?style=flat-square)](https://github.com/opencode-ai/opencode)
 [![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED?style=flat-square&logo=docker)](https://docker.com)
@@ -16,9 +16,9 @@ Este repositório é um template Docker com [Spec Kit](https://github.com/github
 ## 🛠 Tecnologias
 
 - **Docker** — ambiente isolado e reproduzível
-- **Spec Kit 0.12.5** — core do SDD
+- **Spec Kit 0.13.3** — core do SDD
 - **OpenCode** — integração com AI coding agent
-- **11 extensões** — Git, Review, Verify, Verify-Tasks, Sync, Bugfix, Refine, Doctor, Agent-Context, Lifecycle, Switch
+- **11 extensões** — Git, Review, Verify, Verify-Tasks, Sync, Bugfix, Refine, Doctor, Agent-Context, [Lifecycle](https://github.com/wagner-sousa/spec-kit-lifecycle), [Switch](https://github.com/wagner-sousa/spec-kit-switch)
 
 ## 📦 Pré-requisitos
 
@@ -163,7 +163,7 @@ graph LR
     end
 ```
 
-📖 [README Agent-Context](.specify/extensions/agent-context/README.md) · [README Doctor](.specify/extensions/doctor/README.md) · [README Verify-Tasks](.specify/extensions/verify-tasks/README.md)
+📖 [README Agent-Context](.specify/extensions/agent-context/README.md) · [README Doctor](.specify/extensions/doctor/README.md) · [README Verify-Tasks](.specify/extensions/verify-tasks/README.md) · [README Lifecycle](.specify/extensions/lifecycle/README.md) · [README Switch](.specify/extensions/switch/README.md)
 
 ### Extensão Git — Branch Management & Auto-Commit
 

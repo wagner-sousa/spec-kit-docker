@@ -5,7 +5,10 @@ extension:
   name: "Spec Switcher"
   version: "1.0.0"
   description: "Navigate between specs — list available specs and switch active feature with git checkout"
-  author: "local"
+  author: "Wagner Sousa"
+  repository: "https://github.com/wagner-sousa/spec-kit-switch"
+  license: "MIT"
+  homepage: "https://github.com/wagner-sousa/spec-kit-switch"
 
 requires:
   speckit_version: ">=0.4.0"

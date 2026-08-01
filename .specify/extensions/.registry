@@ -142,7 +142,8 @@
     "lifecycle": {
       "version": "1.0.0",
       "source": "local",
-      "manifest_hash": "sha256:placeholder",
+      "repository": "https://github.com/wagner-sousa/spec-kit-lifecycle",
+      "manifest_hash": "",
       "enabled": true,
       "priority": 100,
       "registered_commands": {
@@ -159,7 +160,8 @@
     "switch": {
       "version": "1.0.0",
       "source": "local",
-      "manifest_hash": "sha256:placeholder",
+      "repository": "https://github.com/wagner-sousa/spec-kit-switch",
+      "manifest_hash": "",
       "enabled": true,
       "priority": 10,
       "registered_commands": {
