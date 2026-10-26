@@ -33,6 +33,6 @@ allowed_commands:
 # Set enabled: true to auto-suggest lock after an event
 auto_lock_triggers:
   - event: after_converge
-    enabled: false
+    enabled: true
   - event: after_implement
     enabled: false
