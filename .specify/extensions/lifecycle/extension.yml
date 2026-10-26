@@ -33,7 +33,7 @@ provides:
 
   config:
     - name: "lifecycle-config.yml"
-      template: "lifecycle-config.yml"
+      file: "lifecycle-config.yml"
       description: "Lifecycle configuration — blocked/allowed commands and auto-lock triggers"
       required: false
 
@@ -52,3 +52,4 @@ tags:
   - "governance"
   - "gates"
   - "workflow"
+  - "sdd"

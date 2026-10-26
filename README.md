@@ -1,6 +1,6 @@
 # Spec Kit Docker Template
 
-[![Spec Kit](https://img.shields.io/badge/Spec%20Kit-0.13.3-blue?style=flat-square)](https://github.com/github/spec-kit)
+[![Spec Kit](https://img.shields.io/badge/Spec%20Kit-1.x-blue?style=flat-square)](https://github.com/github/spec-kit)
 [![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
 [![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED?style=flat-square&logo=docker)](https://docker.com)
 [![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=flat-square&logo=python)](https://python.org)
@@ -15,8 +15,8 @@ Este repositório é um template Docker com [Spec Kit](https://github.com/github
 ## 🛠 Tecnologias
 
 - **Docker** — ambiente isolado e reproduzível
-- **Spec Kit 0.13.3** — core do SDD
-- **11 extensões** — Git, Review, Verify, Verify-Tasks, Sync, Bugfix, Refine, Doctor, Agent-Context, [Lifecycle](https://github.com/wagner-sousa/spec-kit-lifecycle), [Switch](https://github.com/wagner-sousa/spec-kit-switch)
+- **Spec Kit 1.x** — core do SDD
+- **8 extensões** — Git, Verify-Tasks, Sync, Bugfix, Refine, Doctor, Agent-Context, [Lifecycle](https://github.com/wagner-sousa/spec-kit-lifecycle), [Switch](https://github.com/wagner-sousa/spec-kit-switch)
 
 ## 📦 Pré-requisitos
 
@@ -46,7 +46,28 @@ docker compose -f docker-compose.specify.yml build
 ### Inicialize o Spec Kit
 
 ```bash
-./specify init . --integration <seu-agente>
+./specify init --here --force --integration <seu-agente> --ignore-agent-tools
+```
+
+### Instale as Extensões do Template
+
+As extensões não são versionadas (thin template). O manifest declarativo
+`.specify/extensions-manifest.json` lista as extensões:
+
+```bash
+chmod +x install-extensions.sh
+./install-extensions.sh
+./specify extension update
+```
+
+> 8 extensões instalam via manifest. `review` e `verify` foram removidos — falham na validação da CLI 1.x (scripts com underscore no upstream).
+> da CLI 1.x (`detect-changed-files.sh` e `load-config.sh` com underscore
+> no upstream).
+
+Para atualizar depois:
+
+```bash
+./specify extension update
 ```
 
 ### Inicie o Fluxo SDD
@@ -68,16 +89,18 @@ docker compose -f docker-compose.specify.yml build
 
 ```
 spec-kit-docker/
-├── .specify/              # Core do Spec Kit
-│   ├── extensions/        # Extensões instaladas (11)
-│   ├── memory/            # Constitution e contexto
-│   └── scripts/           # Scripts de automação
+├── .specify/                       # Core do Spec Kit (gerado via init)
+│   ├── extensions/                 # Gerado via install-extensions.sh (não versionado)
+│   ├── extensions-manifest.json    # Manifest declarativo das extensões
+│   ├── extensions.yml              # Hooks das extensões
+│   └── memory/                     # Constitution e contexto
 ├── specs/                 # Especificações das features
 │   └── NNN-feature-name/
 │       ├── spec.md
 │       ├── plan.md
 │       └── tasks.md
 ├── docker-compose.specify.yml
+├── install-extensions.sh  # Instala extensões do manifest
 ├── specify                # Entrypoint CLI
 └── README.md
 ```
@@ -92,7 +115,7 @@ graph LR
     B -->|Define requisitos| C[plan]
     C -->|Plano técnico| D[tasks]
     D -->|Gera tarefas| E[implement]
-    E -->|Implementa| F{Review & Verify}
+    E -->|Implementa| F{Verify-Tasks & Sync}
     F -->|Aprovado| G[PR / Deploy]
     F -->|Reprovado| E
 ```
@@ -122,7 +145,7 @@ graph LR
     L --> M
 ```
 
-Os hooks `before_*` preparam o ambiente (git branches, contexto). Os hooks `after_*` executam verificações (review, verify, sync, commit, etc.).
+Os hooks `before_*` preparam o ambiente (git branches, contexto). Os hooks `after_*` executam verificações (verify-tasks, sync, commit, etc.).
 
 ### Extensões Instaladas
 
@@ -135,8 +158,6 @@ graph LR
         B[Git] -->|Gerencia branches| M[Git Repository]
     end
     subgraph "Quality"
-        C[Review] -->|Review código| N[Code Quality]
-        D[Verify] -->|Valida implementação| O[Spec Alignment]
         E[Verify-Tasks] -->|Detecta phantom tasks| P[Task Completion]
     end
 ```
@@ -159,7 +180,7 @@ graph LR
     end
 ```
 
-📖 [README Agent-Context](.specify/extensions/agent-context/README.md) · [README Doctor](.specify/extensions/doctor/README.md) · [README Verify-Tasks](.specify/extensions/verify-tasks/README.md) · [README Lifecycle](.specify/extensions/lifecycle/README.md) · [README Switch](.specify/extensions/switch/README.md)
+📖 As extensões são instaladas via `install-extensions.sh` e documentadas nos próprios repositórios: [Agent-Context](https://github.com/github/spec-kit) · [Doctor](https://github.com/KhawarHabibKhan/spec-kit-doctor) · [Verify-Tasks](https://github.com/datastone-inc/spec-kit-verify-tasks) · [Lifecycle](https://github.com/wagner-sousa/spec-kit-lifecycle) · [Switch](https://github.com/wagner-sousa/spec-kit-switch)
 
 ### Extensão Git — Branch Management & Auto-Commit
 
@@ -179,39 +200,6 @@ graph LR
 ```
 
 📖 [README da extensão](.specify/extensions/git/README.md)
-
-### Extensão Review — Code Review Automático
-
-Disparado em `after_implement`:
-
-```mermaid
-graph LR
-    A[after_implement] --> B[review.run]
-    B --> C[Revisa código, testes, tipos, erros]
-    C --> D{Aprovado?}
-    D -->|Sim| E[Prossegue]
-    D -->|Não| F[Corrigir issues]
-    F --> B
-```
-
-📖 [README da extensão](.specify/extensions/review/README.md)
-
-### Extensão Verify — Validação vs Specs
-
-Disparado em `after_implement`:
-
-```mermaid
-graph LR
-    A[after_implement] --> B[verify.run]
-    B --> C[Valida implementação vs spec.md / plan.md / tasks.md]
-    C --> D{Alinhado?}
-    D -->|Sim| E[Implementação válida]
-    D -->|Não| F[Relatório de desvios]
-    F --> G[Corrigir]
-    G --> B
-```
-
-📖 [README da extensão](.specify/extensions/verify/README.md)
 
 ### Extensão Sync — Detecção de Drift
 
@@ -264,8 +252,6 @@ graph LR
     I -->|Não| K[Tudo sincronizado]
 ```
 
-📖 [README da extensão](.specify/extensions/refine/README.md)
-
 ### Extensão Lifecycle — Gerenciamento de Fases
 
 ```mermaid
@@ -276,7 +262,6 @@ graph LR
     C -->|Sim| D[lifecycle.lock]
     D --> E[Fase locked]
     E --> F[Core SDD bloqueado]
-    E --> G[refine.* liberado]
     E --> H[bugfix.* liberado]
     E --> I[write-agents → AGENTS.md]
     F --> J{Precisa alterar?}
@@ -289,7 +274,7 @@ graph LR
     N --> L
 ```
 
-Controla o ciclo de vida da especificação. Quando ativa (`locked`), bloqueia comandos de escrita direta (`specify`, `clarify`, `plan`, `tasks`, `checklist`, `analyze`) e permite apenas caminhos controlados (`refine.*`, `bugfix.*`).
+Controla o ciclo de vida da especificação. Quando ativa (`locked`), bloqueia comandos de escrita direta (`specify`, `clarify`, `plan`, `tasks`, `checklist`, `analyze`) e permite apenas caminhos controlados (`bugfix.*`).
 
 O estado fica **por spec** em `specs/NNN-feature/.lifecycle.json`. O comando `unlock --spec-dir <path>` é a interface genérica usada por outros plugins (ex: `switch.set` faz auto-unlock da spec anterior). Regras de bloqueio são sincronizadas com `AGENTS.md` via `lifecycle.write-agents` após cada lock/unlock.
 
@@ -341,14 +326,6 @@ Navega entre especificações sem conflitos de `feature.json`. O `switch.set` fa
 | | `speckit.git.validate` | Valida estado da branch | Manual |
 | | `speckit.git.remote` | Detecta remote configurado | Manual |
 | **Agent-Context** | `speckit.agent-context.update` | Atualiza contexto do agente | `after_*` |
-| **Review** | `speckit.review.run` | Review completo (código, testes, tipos, erros, simplificação) | `after_implement` |
-| | `speckit.review.code` | Apenas code quality | Manual |
-| | `speckit.review.comments` | Análise de comentários | Manual |
-| | `speckit.review.tests` | Cobertura de testes | Manual |
-| | `speckit.review.errors` | Error handling | Manual |
-| | `speckit.review.types` | Type design | Manual |
-| | `speckit.review.simplify` | Simplificação de código | Manual |
-| **Verify** | `speckit.verify.run` | Valida implementação vs spec/plan/tasks | `after_implement` |
 | **Verify-Tasks** | `speckit.verify-tasks.run` | Detecta phantom tasks (tasks implementadas sem especificação) | `after_implement` |
 | **Sync** | `speckit.sync.analyze` | Detecta drift entre spec e código | `after_implement` |
 | | `speckit.sync.propose` | Propõe resoluções para drift | Manual |
@@ -373,12 +350,8 @@ Navega entre especificações sem conflitos de `feature.json`. O `switch.set` fa
 
 ## 🧪 Testes
 
-- **`specify doctor`** — diagnóstico do projeto via CLI
 - **`speckit.doctor.check`** — diagnóstico completo (extensões, hooks, sincronia)
-- **`speckit.verify.run`** — valida implementação vs spec/plan/tasks
 - **`speckit.verify-tasks.run`** — detecta phantom tasks
-
-_Nota: `doctor.check` e `verify.run` são disparados automaticamente em hooks `after_*`._
 
 ## 🔄 Atualizando seu Projeto
 
@@ -399,15 +372,16 @@ Este repositório é um template. Para receber atualizações de novas versões:
 | `Dockerfile` | `README.md` |
 | `docker-compose.specify.yml` | `specs/` |
 | `specify` (entrypoint) | `.specify/memory/constitution.md` |
-| `post-create.sh` | `.env*` |
-| `.specify/` (extensões, scripts, templates) | Demais arquivos do projeto |
+| `install-extensions.sh` | `.env*` |
+| `.specify/extensions-manifest.json` | Demais arquivos do projeto |
+| `.specify/extensions.yml` | |
 
 ### Atualização manual
 
 ```bash
 git remote add template https://github.com/wagner-sousa/spec-kit-docker.git
 git fetch template tag vX.Y.Z
-git checkout FETCH_HEAD -- Dockerfile docker-compose.specify.yml specify post-create.sh .specify/ ':!.specify/memory/'
+git checkout FETCH_HEAD -- Dockerfile docker-compose.specify.yml specify install-extensions.sh .specify/extensions-manifest.json .specify/extensions.yml ':!.specify/memory/'
 echo "vX.Y.Z" > .template-version
 git add . && git commit -m "chore: update template to vX.Y.Z"
 ```

@@ -5,10 +5,8 @@ installed:
 - git
 - lifecycle
 - refine
-- review
 - switch
 - sync
-- verify
 - verify-tasks
 settings:
   auto_execute_hooks: true
@@ -245,22 +243,6 @@ hooks:
     priority: 10
     prompt: Commit implementation changes?
     description: Auto-commit after implementation
-    condition: null
-  - extension: review
-    command: speckit.review.run
-    enabled: true
-    optional: false
-    priority: 10
-    prompt: Run PR review on implemented changes?
-    description: Comprehensive review after implementation
-    condition: null
-  - extension: verify
-    command: speckit.verify.run
-    enabled: true
-    optional: false
-    priority: 10
-    prompt: Run verify to validate implementation against specification?
-    description: Post-implementation verification gate
     condition: null
   - extension: verify-tasks
     command: speckit.verify-tasks.run
